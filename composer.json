@@ -1,6 +1,6 @@
 {
     "name": "zerp/taskly",
-    "description": "Description for taskly package",
+    "description": "Project management module for the Zerp ERP platform",
     "type": "library",
     "license": "MIT",
     "require": {},
