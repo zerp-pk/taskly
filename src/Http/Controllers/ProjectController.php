@@ -548,11 +548,22 @@ class ProjectController extends Controller
             ]);
 
             foreach ($request->images as $imagePath) {
-                $mediaFile = Media::where('file_name', basename($imagePath))->first();
+                $fileName = basename($imagePath);
+                $mediaFile = \App\Services\MediaAttachmentService::resolveOrBackfill(
+                    $fileName,
+                    Project::class,
+                    $project->id,
+                    'project_files',
+                    Auth::id(),
+                    creatorId(),
+                    \App\Services\MediaAttachmentService::ensureDirectory('Project Files', creatorId(), Auth::id())
+                );
+
                 ProjectFile::create([
                     'project_id' => $project->id,
-                    'file_name' => $mediaFile ? $mediaFile->name : basename($imagePath),
-                    'file_path' => basename($imagePath),
+                    'file_name' => $mediaFile ? $mediaFile->name : $fileName,
+                    'file_path' => $fileName,
+                    'media_id' => $mediaFile?->id,
                 ]);
             }
 
@@ -564,6 +575,9 @@ class ProjectController extends Controller
     public function deleteFile(ProjectFile $file)
     {
         if (Auth::user()->can('edit-project')) {
+            if ($file->media_id && $file->media) {
+                \App\Services\MediaAttachmentService::deleteMedia($file->media);
+            }
             $file->delete();
             return back()->with('success', __('The files has been deleted.'));
         }
