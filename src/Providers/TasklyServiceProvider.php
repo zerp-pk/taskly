@@ -16,7 +16,17 @@ class TasklyServiceProvider extends ServiceProvider
         if (file_exists($apiRoutesPath)) {
             $this->loadRoutesFrom($apiRoutesPath);
         }
-        
+
+        // Scoped Swagger/OpenAPI docs for this module at /docs/taskly.
+        // Guarded so the package still works if the host app has no Scramble.
+        if (class_exists(\Dedoc\Scramble\Scramble::class)) {
+            \Dedoc\Scramble\Scramble::registerApi('taskly', [
+                'api_path' => 'api/taskly',
+                'info' => ['version' => \Composer\InstalledVersions::getPrettyVersion('zerp/taskly') ?? '1.0.0', 'description' => 'Zerp Taskly (projects & tasks) module REST API for mobile and third-party clients.'],
+                'ui' => ['title' => 'Zerp Taskly API'],
+            ])->expose(ui: '/docs/taskly', document: '/docs/taskly.json');
+        }
+
         $migrationsPath = __DIR__.'/../Database/Migrations';
         if (is_dir($migrationsPath)) {
             $this->loadMigrationsFrom($migrationsPath);
