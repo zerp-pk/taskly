@@ -67,7 +67,7 @@ class ProjectController extends Controller
                 ->when(request('status'), fn($q) => $q->where('status', request('status')))
                 ->when(request('date'), fn($q) => $q->where('start_date', '<=', request('date'))->where('end_date', '>=', request('date')))
 
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'created_at', 'desc'), fn($q) => $q->latest())
                 ->paginate(request('per_page', 10))
                 ->withQueryString();
 
