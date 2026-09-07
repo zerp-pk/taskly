@@ -47,7 +47,7 @@ class TaskApiController extends Controller
                     })
                     ->when($request->project_id, fn($q) => $q->where('project_id', $request->project_id))
                     ->when($request->status && in_array($request->status, ['High', 'Medium', 'Low']), fn($q) => $q->where('priority', $request->status))
-                    ->when($request->sort, fn($q) => $q->orderBy($request->sort, $request->get('direction', 'asc')), fn($q) => $q->latest());
+                    ->when($request->sort, fn($q) => $q->sortSafe($request->sort, $request->get('direction'), 'created_at', 'desc'), fn($q) => $q->latest());
 
                 $items = $items->get();
                 $items->transform(function ($task) {

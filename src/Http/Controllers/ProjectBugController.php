@@ -58,9 +58,7 @@ class ProjectBugController extends Controller
                 $query->where('priority', $request->priority);
             }
 
-            $sortField = $request->get('sort', 'created_at');
-            $sortDirection = $request->get('direction', 'desc');
-            $query->orderBy($sortField, $sortDirection);
+            $query->sortSafe($request->get('sort'), $request->get('direction'), 'created_at', 'desc');
 
             $perPage = $request->get('per_page', 10);
             $bugs = $query->paginate($perPage);

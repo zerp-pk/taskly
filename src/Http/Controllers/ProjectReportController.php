@@ -41,7 +41,7 @@ class ProjectReportController extends Controller
             ->when($request->get('name'), fn($q) => $q->where('name', 'like', '%' . $request->get('name') . '%'))
             ->when($request->get('status'), fn($q) => $q->where('status', $request->get('status')))
             ->when($request->get('date'), fn($q) => $q->where('start_date', '<=', $request->get('date'))->where('end_date', '>=', $request->get('date')))
-            ->when($request->get('sort'), fn($q) => $q->orderBy($request->get('sort'), $request->get('direction', 'asc')), fn($q) => $q->latest())
+            ->when($request->get('sort'), fn($q) => $q->sortSafe($request->get('sort'), $request->get('direction'), 'created_at', 'desc'), fn($q) => $q->latest())
             ->paginate($request->get('per_page', 10))
             ->withQueryString();
 

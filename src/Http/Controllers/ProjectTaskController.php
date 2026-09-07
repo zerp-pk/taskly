@@ -54,7 +54,7 @@ class ProjectTaskController extends Controller
             $tasks = $query->when($projectId, fn($q) => $q->where('project_id', $projectId))
                 ->when(request('title'), fn($q) => $q->where('title', 'like', '%' . request('title') . '%'))
                 ->when(request('priority'), fn($q) => $q->where('priority', request('priority')))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'created_at', 'desc'), fn($q) => $q->latest())
                 ->paginate(request('per_page', 10))
                 ->withQueryString();
 
